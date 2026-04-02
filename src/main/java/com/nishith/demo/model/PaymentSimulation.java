@@ -8,7 +8,7 @@ public class PaymentSimulation {
     @GeneratedValue(strategy =GenerationType.IDENTITY)
     int id;
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="BookingId")
     private Booking bookingid;
     private int ammount_in_rs;
 
@@ -16,9 +16,6 @@ public class PaymentSimulation {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public Booking getBookingid() {
         return bookingid;

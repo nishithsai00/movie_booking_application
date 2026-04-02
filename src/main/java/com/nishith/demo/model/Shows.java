@@ -22,16 +22,23 @@ private int masterid;
 @JsonFormat(pattern ="dd-MM-yyyy HH:mm:ss")
 private LocalDateTime timings;
 
-	public LocalDateTime getDate() {
-	return timings;
-}
-public void setDate(LocalDateTime timings) {
-	this.timings = timings;
-}
 @ManyToOne
 @JoinColumn(name="movieid")
 private Movie movie;
-@ManyToOne
+
+	public LocalDateTime getTimings() {
+		return timings;
+	}
+
+	public void setTimings(LocalDateTime timings) {
+		this.timings = timings;
+	}
+
+	public int getMasterid() {
+		return masterid;
+	}
+
+	@ManyToOne
 @JoinColumn(name="theatherid")
 private Theather theather;
 public int getId() {

@@ -13,31 +13,51 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int bookingId;
     @ManyToOne
     @JoinColumn(name = "masterid")
     private  Shows showid;
 
-//    @ElementCollection
-    private String seat;
+    public int getBookingId() {
+        return bookingId;
+    }
+
+    @ElementCollection
+    private List<String> seat;
 
    // private String status;
     private int bookedBy;
     private Date Bookingdate;
 
     public int getId() {
-        return id;
+        return bookingId;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.bookingId = id;
     }
 
-    public String getSeats() {
+    public Shows getShowid() {
+        return showid;
+    }
+
+    public void setShowid(Shows showid) {
+        this.showid = showid;
+    }
+
+    public List<String> getSeat() {
         return seat;
     }
 
-    public void setSeats(String seats) {
+    public void setSeat(List<String> seat) {
+        this.seat = seat;
+    }
+
+    public List<String> getSeats() {
+        return seat;
+    }
+
+    public void setSeats(List<String> seats) {
         this.seat = seats;
     }
 

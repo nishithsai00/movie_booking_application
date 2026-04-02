@@ -2,8 +2,6 @@ package com.nishith.demo.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 public class SeatSelection {
     @Id
@@ -12,9 +10,29 @@ public class SeatSelection {
     @ManyToOne
     @JoinColumn(name="masterid")
     private Shows showid;
-    private String seats;
-    private String status;
+    private String seat;
+    private String status="Avilable";
+    private int price=100;
 
+    public int getId() {
+        return id;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Shows getShowid() {
         return showid;
@@ -24,11 +42,11 @@ public class SeatSelection {
         this.showid = showid;
     }
 
-    public String getSeats() {
-        return seats;
+    public String getSeat() {
+        return seat;
     }
 
-    public void setSeats(String seats) {
-        this.seats = seats;  
+    public void setSeat(String seat) {
+        this.seat = seat;
     }
 }

@@ -20,7 +20,12 @@ public class Movie {
 	private LocalDate date; //use "instance" insterd of localdatetime 
  private String imgname;
  private String imgtype;
- @Lob
+
+	public int getMovieid() {
+		return movieid;
+	}
+
+	@Lob
  private byte[] image;
  
 	public String getImgname() {

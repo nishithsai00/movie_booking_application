@@ -27,7 +27,12 @@ public String toString() {
 public String getName() {
 	return name;
 }
-public void setName(String name) {
+
+	public int getTheatherid() {
+		return theatherid;
+	}
+
+	public void setName(String name) {
 	this.name = name;
 }
 public String getLocation() {
