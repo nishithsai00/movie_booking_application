@@ -2,6 +2,8 @@ package com.nishith.demo.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class SeatSelection {
     @Id
@@ -11,8 +13,17 @@ public class SeatSelection {
     @JoinColumn(name="masterid")
     private Shows showid;
     private String seat;
-    private String status="Avilable";
+    private String status="Available";
     private int price=100;
+    private LocalDateTime lockedAt;
+
+    public LocalDateTime getLockedAt() {
+        return lockedAt;
+    }
+
+    public void setLockedAt(LocalDateTime lockedAt) {
+        this.lockedAt = lockedAt;
+    }
 
     public int getId() {
         return id;

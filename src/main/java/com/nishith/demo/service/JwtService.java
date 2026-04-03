@@ -4,6 +4,7 @@ import com.nishith.demo.model.Users;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -21,7 +22,8 @@ public class JwtService {
                 .signWith(secretkey())
                 .compact();
     }
-  private String skey="akfjndkfsdkfohgfytfrtfytcxtfutvcfbn";
+    @Value("${jwt.secret}")
+  private String skey;
     private SecretKey secretkey()
     {
         byte [] b=skey.getBytes();
