@@ -1,6 +1,7 @@
 package com.nishith.demo.controllers;
 
 import com.nishith.demo.model.Booking;
+import com.nishith.demo.model.PaymentSimulation;
 import com.nishith.demo.service.BookingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,11 @@ public class BookingController {
     public String bookaticket(@RequestBody Booking booking)
     {
 
-      return "booking conformed with reference id : " +  bservice.bookAticket(booking);
+      return bservice.bookAticket(booking);
+    }
+    @PostMapping("/payment")
+    public String paymentCheck(PaymentSimulation paymentSimulation,String cap){
+        return bservice.afterPayment(paymentSimulation,cap);
     }
 }
 

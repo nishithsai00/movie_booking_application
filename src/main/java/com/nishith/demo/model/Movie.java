@@ -21,10 +21,12 @@ public class Movie {
  private String imgname;
  private String imgtype;
 
-	public int getMovieid() {
+	public int getId() {
 		return movieid;
 	}
-
+	public void setId(int id) {
+		this.movieid = id;
+	}
 	@Lob
  private byte[] image;
  
@@ -46,12 +48,7 @@ public class Movie {
  public void setImage(byte[] image) {
 	this.image = image;
  }
-	public int getId() {
-		return movieid;
-	}
-	public void setId(int id) {
-		this.movieid = id;
-	}
+
 	public String getName() {
 		return name;
 	}

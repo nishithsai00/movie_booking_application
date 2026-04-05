@@ -15,15 +15,24 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int bookingId;
     @ManyToOne
-    @JoinColumn(name = "masterid")
+    @JoinColumn(name = "showid")
     private  Shows show;
+    @ManyToOne
+    @JoinColumn(name="paymentid")
+    private PaymentSimulation payment;
     @ElementCollection
     private List<String> seat;
-    // private String status;
-    private int bookedBy;
+    private String status;
+    private String bookedBy;
     private LocalDateTime Bookingdate;
 
+    public PaymentSimulation getPayment() {
+        return payment;
+    }
 
+    public void setPayment(PaymentSimulation payment) {
+        this.payment = payment;
+    }
 
     public int getBookingId() {
         return bookingId;
@@ -31,6 +40,14 @@ public class Booking {
 
     public Shows getShow() {
         return show;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public void setShow(Shows show) {
@@ -45,11 +62,11 @@ public class Booking {
         this.seat = seat;
     }
 
-    public int getBookedBy() {
+    public String getBookedBy() {
         return bookedBy;
     }
 
-    public void setBookedBy(int bookedBy) {
+    public void setBookedBy(String bookedBy) {
         this.bookedBy = bookedBy;
     }
 

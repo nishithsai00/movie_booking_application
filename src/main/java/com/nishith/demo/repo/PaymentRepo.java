@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BookingsRepo extends JpaRepository<Booking,Integer> {
-  Booking findBypayment(PaymentSimulation paymentSimulation);
+public interface PaymentRepo  extends JpaRepository<PaymentSimulation,Integer> {
+    PaymentSimulation findBybookingid(Booking booking);
 }

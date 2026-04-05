@@ -12,6 +12,9 @@ public class SeatSelection {
     @ManyToOne
     @JoinColumn(name="masterid")
     private Shows showid;
+    @ManyToOne
+    @JoinColumn(name="bookingid")
+    private  Booking booking;
     private String seat;
     private String status="Available";
     private int price=100;
@@ -23,6 +26,14 @@ public class SeatSelection {
 
     public void setLockedAt(LocalDateTime lockedAt) {
         this.lockedAt = lockedAt;
+    }
+
+    public Booking getBooking() {
+        return booking;
+    }
+
+    public void setBooking(Booking booking) {
+        this.booking = booking;
     }
 
     public int getId() {
