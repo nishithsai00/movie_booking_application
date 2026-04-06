@@ -1,6 +1,5 @@
 package com.nishith.demo.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.nishith.demo.model.SeatSelection;
@@ -37,6 +36,9 @@ public class ShowService {
 
 		
 	}
-	
 
+
+    public void deleteAshow(int movieId, int theatherId) {
+		srepo.deleteByMovie_IdAndTheather_Id(movieId,theatherId);
+    }
 }

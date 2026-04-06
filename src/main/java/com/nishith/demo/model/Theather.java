@@ -1,7 +1,5 @@
 package com.nishith.demo.model;
 
-import org.springframework.boot.autoconfigure.web.WebProperties.Resources.Chain.Strategy;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,9 +26,6 @@ public String getName() {
 	return name;
 }
 
-	public int getTheatherid() {
-		return theatherid;
-	}
 
 	public void setName(String name) {
 	this.name = name;

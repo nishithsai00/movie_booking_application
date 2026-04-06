@@ -21,10 +21,12 @@ public class Shows {
 private int masterid;
 @JsonFormat(pattern ="dd-MM-yyyy HH:mm:ss")
 private LocalDateTime timings;
-
 @ManyToOne
 @JoinColumn(name="movieid")
 private Movie movie;
+@ManyToOne
+@JoinColumn(name="theatherid")
+private Theather theather;
 
 	public LocalDateTime getTimings() {
 		return timings;
@@ -38,9 +40,7 @@ private Movie movie;
 		return masterid;
 	}
 
-	@ManyToOne
-@JoinColumn(name="theatherid")
-private Theather theather;
+
 public int getId() {
 	return masterid;
 }

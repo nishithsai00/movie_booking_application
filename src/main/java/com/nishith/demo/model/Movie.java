@@ -17,18 +17,18 @@ public class Movie {
 	private int movieid;
 	private String name;
  @JsonFormat(pattern ="dd-MM-yyyy")
-	private LocalDate date; //use "instance" insterd of localdatetime 
+	private LocalDate date;
  private String imgname;
  private String imgtype;
-
+	@Lob
+	private byte[] image;
 	public int getId() {
 		return movieid;
 	}
 	public void setId(int id) {
 		this.movieid = id;
 	}
-	@Lob
- private byte[] image;
+
  
 	public String getImgname() {
 	return imgname;

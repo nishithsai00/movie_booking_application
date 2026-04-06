@@ -48,24 +48,23 @@ public class BookingsService {
      if(seats.size()>10){
          return "only less then 10 seats are allowed for Booking!!!";
      }
-    Shows sh= booking.getShow();
+    int sh= booking.getShow().getId();
         for (String s : seats) {
-            List<SeatSelection> entity=ssrepo.findByShowidAndSeat(sh, s);
-            if (!entity.isEmpty()) {
-                long time = ChronoUnit.SECONDS.between(entity.getFirst().getLockedAt(),LocalDateTime.now());
-                if(time>=300 &&entity.getFirst().getStatus().equals("LOCKED")) {
-                    entity.getFirst().setStatus("AVAILABLE");
-                    ssrepo.save(entity.getFirst());}
+            SeatSelection entity=ssrepo.findByShowid_IdAndSeat(sh, s);
+            if (!(entity==null)) {
+                long time = ChronoUnit.SECONDS.between(entity.getLockedAt(),LocalDateTime.now());
+                if(time>=300 &&entity.getStatus().equals("LOCKED")) {
+                    entity.setStatus("AVAILABLE");
+                    ssrepo.save(entity);}
 
-                    if (entity.getFirst().getStatus().equals("LOCKED") || entity.getFirst().getStatus().equals("BOOKED")) {
-                        return "The seats" + entity.getFirst().getSeat() + "are not available";
+                    if (entity.getStatus().equals("LOCKED") || entity.getStatus().equals("BOOKED")) {
+                        return "The seats" + entity.getSeat() + "are not available";
                     }
 
             }
         }
         for(String s:seats){
-           List<SeatSelection> entity=ssrepo.findByShowidAndSeat(sh,s);
-            SeatSelection seatSelection=entity.getFirst();
+           SeatSelection seatSelection=ssrepo.findByShowid_IdAndSeat(sh,s);
             seatSelection.setStatus("LOCKED");
             seatSelection.setLockedAt(LocalDateTime.now());
             seatSelection.setBooking(booking);
@@ -75,7 +74,6 @@ public class BookingsService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         booking.setBookedBy(username);
         booking.setStatus("HOLD");
-        booking.setBookingdate(LocalDateTime.now());
         brepo.save(booking);
 
         SeatSelection seatSelection=new SeatSelection();
@@ -100,16 +98,16 @@ public class BookingsService {
                 return "Payment failed due to over Late Payment try to book again to continue";
             }
 
-            PaymentSimulation paymentSimulation =prepo.findBybookingid(payment.getBookingid());
+            PaymentSimulation paymentSimulation =prepo.findByBookingid_BookingId(payment.getBookingid().getBookingId());
 
-       if(cap.equals(captcha) && !(payment.getBookingid()==paymentSimulation.getBookingid()) && payment.getAmmount_in_rs()==paymentSimulation.getAmmount_in_rs())
+       if(cap.equals(captcha) &&  payment.getAmmount_in_rs()==paymentSimulation.getAmmount_in_rs())
        {
            paymentSimulation.setStatus("SUCCESS");
            prepo.save(paymentSimulation);
-          Booking booking=brepo.findBypayment(payment);
+          Booking booking=brepo.findByPayment(payment);
           booking.setStatus("SUCCESS");
           brepo.save(booking);
-          List<SeatSelection> ss=ssrepo.findBybooking(booking);
+          List<SeatSelection> ss=ssrepo.findByBooking(booking);
            for (SeatSelection seat : ss) {
                seat.setStatus("BOOKED");
                ssrepo.save(seat);
