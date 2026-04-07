@@ -3,12 +3,7 @@ package com.nishith.demo.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.nishith.demo.model.Theather;
 import com.nishith.demo.service.TheatherService;
@@ -18,7 +13,7 @@ import com.nishith.demo.service.TheatherService;
 public class TheatherController {
 	@Autowired
 	TheatherService service;
-	
+
 	@GetMapping("/theatres")
 	public List<Theather> AllTheather()
 	{
@@ -30,9 +25,12 @@ public class TheatherController {
 		service.addtheather(data);
 	}
 	@DeleteMapping("/theatres")
-	public void DeleteTheather()
+	public String DeleteTheather(@RequestBody Theather theather)
 	{
-		
+		return service.delete(theather);
 	}
-
+@GetMapping("/theather/{location}")
+	public List<Theather> grtByLocation(@PathVariable String location){
+		return service.getByLocation(location);
+}
 }

@@ -30,6 +30,6 @@ public void addshow(@RequestBody Shows sh)
 	public String removeAshow(@RequestBody int movieId,int theatherId ){
 		service.deleteAshow(movieId,theatherId);
 		return "Show successfully removed";
+	}
 
-}
 }

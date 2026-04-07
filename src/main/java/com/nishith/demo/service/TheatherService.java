@@ -22,4 +22,18 @@ public class TheatherService {
 		trepo.save(data);
 	}
 
+    public String delete(Theather theather) {
+		try {
+			trepo.deleteById(theather.getId());
+			return "deleted by entity";
+		}
+		catch (Exception e){
+			trepo.delete(theather);
+			return "deleted by id";
+		}
+    }
+
+	public List<Theather> getByLocation(String location) {
+		return trepo.findByLocation(location);
+	}
 }
