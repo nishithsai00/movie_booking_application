@@ -4,6 +4,8 @@ package com.nishith.demo.controllers;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.nishith.demo.model.Shows;
+import com.nishith.demo.service.ShowService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration;
@@ -25,6 +27,8 @@ import jdk.jfr.ContentType;
 public class MovieController {
 	@Autowired
 	MovieService service;
+	@Autowired
+	ShowService showService;
 	@RequestMapping("/")
 	public String homepage(HttpServletRequest request){
 		return request.getSession().getId();
@@ -86,5 +90,12 @@ public class MovieController {
 	{
 		return service.sort(id,name,date);
 	}
-	
+	@GetMapping("/movie/{location}")
+	public ResponseEntity<List<Movie>> getByLocation(@PathVariable String location){
+		 return new ResponseEntity(showService.getMovieByLocation(location),HttpStatus.OK);
+	}
+	@GetMapping("/movie/{location}/{name}")
+	public ResponseEntity<List<Shows>> getByMovienameAndLocation(@PathVariable String name ,String location){
+		return new ResponseEntity(showService.getShowsbyMovienameAndLocation(name,location),HttpStatus.OK);
+	}
 }
