@@ -85,7 +85,7 @@ public class MovieController {
 	{
 		return new ResponseEntity(service.byname(name),HttpStatus.OK);
 	}
-	@GetMapping("/sort")
+	@GetMapping("/movie/sort")
 	public List<Movie> sort(@RequestParam (required =false)Integer id ,@RequestParam (required=false) String name,@RequestParam (required=false) LocalDate date)
 	{
 		return service.sort(id,name,date);

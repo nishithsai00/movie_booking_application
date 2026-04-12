@@ -1,5 +1,6 @@
 package com.nishith.demo.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +21,27 @@ public class ShowService {
 	ShowRepo srepo;
 	@Autowired
 	SeatSelectionRepo ssrepo;
+	@Transactional
+public String createExistingShow(int id,LocalDateTime date){
+	Shows s=srepo.findById(id).orElse(null);
+    s.setTimings(date);
+	srepo.save(s);
+	List<SeatSelection> entity=ssrepo.findByShowid_Id(id);
+	for(SeatSelection seat:entity){
+		seat.setBooking(null);
+		seat.setShowid(s);
+		seat.setStatus("AVAILABLE");
+		seat.setLockedAt(null);
+		ssrepo.save(seat);
+	}
+	return "the show is updated successfully";
+}
 
 	public List<Shows> getall() {
 		return srepo.findAll();
 	}
      @Transactional
-	public void addshow(Shows sh) {
+	public int addshow(Shows sh) {
 		srepo.save(sh);
 
 		for(char i='A';i<'M';i++){
@@ -37,7 +53,7 @@ public class ShowService {
 			}
 		}
 
-		
+		return sh.getId();
 	}
 
 
@@ -48,12 +64,7 @@ public class ShowService {
 
 	//get movies by location
     public List<Movie> getMovieByLocation(String location) {
-		List<Shows> entity=srepo.findByTheather_Location(location);
-		List<Movie>movies=new ArrayList();
-		for(Shows m:entity){
-			movies.add(m.getMovie());
-		}
-		 return movies;
+		return srepo.findMoviesByLocation(location);
     }
 	public List<Shows> getShowsbyMovienameAndLocation(String name ,String location){
 

@@ -22,9 +22,9 @@ public class ShowController {
 		return service.getall();
 	}
 @PostMapping("/shows")
-public void addshow(@RequestBody Shows sh)
+public String addshow(@RequestBody Shows sh)
 {
-	service.addshow(sh);
+	return "Show created with reference id" + service.addshow(sh);
 }
 @DeleteMapping("/removeshow")
 	public String removeAshow(@RequestBody int movieId,int theatherId ){

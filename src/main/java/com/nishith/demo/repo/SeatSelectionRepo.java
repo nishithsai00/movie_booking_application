@@ -11,4 +11,5 @@ import java.util.List;
 public interface SeatSelectionRepo extends JpaRepository<SeatSelection,Integer> {
     SeatSelection findByShowid_IdAndSeat(int showid, String seat);
     List<SeatSelection> findByBooking(Booking booking);
+    List<SeatSelection> findByShowid_Id(int showid);
 }

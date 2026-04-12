@@ -2,6 +2,7 @@ package com.nishith.demo.controllers;
 
 import com.nishith.demo.model.Booking;
 import com.nishith.demo.model.PaymentSimulation;
+import com.nishith.demo.model.SeatSelection;
 import com.nishith.demo.service.BookingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,13 @@ public class BookingController {
     {
         return bservice.getbyid(id);
     }
+    @GetMapping("/")
+    public List<SeatSelection> showSeatsByShowid(int showid){
+
+    }
+
+
+
     @PostMapping("/book")
     public String bookaticket(@RequestBody Booking booking)
     {
