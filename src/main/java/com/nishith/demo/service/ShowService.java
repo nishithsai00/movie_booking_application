@@ -21,6 +21,7 @@ public class ShowService {
 	ShowRepo srepo;
 	@Autowired
 	SeatSelectionRepo ssrepo;
+
 	@Transactional
 public String createExistingShow(int id,LocalDateTime date){
 	Shows s=srepo.findById(id).orElse(null);
@@ -55,11 +56,15 @@ public String createExistingShow(int id,LocalDateTime date){
 
 		return sh.getId();
 	}
-
+     public String deleteShowById(int id){
+		srepo.deleteById(id);
+		return  "Show deleted succesfully";
+	 }
 
     public void deleteAshow(int movieId, int theatherId) {
 		srepo.deleteByMovie_IdAndTheather_Id(movieId,theatherId);
     }
+
 
 
 	//get movies by location
