@@ -29,8 +29,13 @@ public void register(Users u)
 AuthenticationManager authmanager;
 public String verifylogin(Users user) {
     Authentication authentication =authmanager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
-    Users u= repo.findByUsername(user.getUsername());
-   return jwtService.tokengeneration(u);
+    if(authentication.isAuthenticated()) {
+        Users u = repo.findByUsername(user.getUsername());
+        return jwtService.tokengeneration(u);
+    }
+    else {
+        throw  new RuntimeException("user not found");
+    }
 
 }
 }

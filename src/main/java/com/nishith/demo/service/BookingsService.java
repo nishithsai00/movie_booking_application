@@ -8,11 +8,15 @@ import com.nishith.demo.repo.BookingsRepo;
 import com.nishith.demo.repo.PaymentRepo;
 import com.nishith.demo.repo.SeatSelectionRepo;
 
+import com.nishith.demo.repo.ShowRepo;
 import jakarta.transaction.Transactional;
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -26,6 +30,8 @@ public class BookingsService {
     private SeatSelectionRepo ssrepo;
     @Autowired
     private PaymentRepo prepo;
+    @Autowired
+    private ShowRepo srepo;
 
     public List<Booking> getallbookings() {
        return brepo.findAll();
@@ -35,14 +41,15 @@ public class BookingsService {
         return brepo.findById(id).orElseThrow();
     }
 
-    Random random =new Random();
-    int rand=100000+random.nextInt(99999);
-    String captcha=String.valueOf(rand);
+
 
 
 
     @Transactional
     public String bookAticket(Booking booking){
+        Random random =new Random();
+        int rand=100000+random.nextInt(99999);
+        String captcha=String.valueOf(rand);
         List<String>seats =booking.getSeat();
 
      if(seats.size()>10){
@@ -53,7 +60,7 @@ public class BookingsService {
             SeatSelection entity=ssrepo.findByShowid_IdAndSeat(sh, s);
             if (!(entity==null)) {
                 long time = ChronoUnit.SECONDS.between(entity.getLockedAt(),LocalDateTime.now());
-                if(time>=300 &&entity.getStatus().equals("LOCKED")) {
+                if(time>300 &&entity.getStatus().equals("LOCKED")) {
                     entity.setStatus("AVAILABLE");
                     ssrepo.save(entity);}
 
@@ -84,6 +91,7 @@ public class BookingsService {
         payment.setStatus("HOLD");
         payment.setBookingtime(LocalDateTime.now());
         payment.setBookingid(booking);
+        payment.setCaptcha(captcha);
         prepo.save(payment);
         return "Your Total Payment of : "+total +" .Complete the payment to Conform booking reference id : "+booking.getBookingId()+
                 " please enter captcha along with total Amount "+captcha;
@@ -100,7 +108,7 @@ public class BookingsService {
 
             PaymentSimulation paymentSimulation =prepo.findByBookingid_BookingId(payment.getBookingid().getBookingId());
 
-       if(cap.equals(captcha) &&  payment.getAmmount_in_rs()==paymentSimulation.getAmmount_in_rs())
+       if(cap.equals(paymentSimulation.getCaptcha()) &&  payment.getAmmount_in_rs()==paymentSimulation.getAmmount_in_rs())
        {
            paymentSimulation.setStatus("SUCCESS");
            prepo.save(paymentSimulation);
@@ -119,6 +127,28 @@ public class BookingsService {
 
 
     }
+public String CancelBooking(int bookingId){
+        String username= SecurityContextHolder.getContext().getAuthentication().getName();
+        Booking booking=brepo.findById(bookingId).orElseThrow();
+        Shows show=srepo.findById(booking.getShow().getId()).orElseThrow();
+        long timediff=ChronoUnit.SECONDS.between(LocalDateTime.now(),show.getTimings());
+        if(username.equals(booking.getBookedBy())) {
+            if (timediff > 10800) {
+                List<String> seats = booking.getSeat();
+                booking.setStatus("CANCELED");
+                PaymentSimulation payment = prepo.findByBookingid_BookingId(bookingId);
+                payment.setStatus("CANCELED");
+                payment.setBookingid(booking);
+                brepo.save(booking);
+                prepo.save(payment);
+                return "Booking cancellation was success";
+            }
+        }
+        return "Invalid user from booked username";
 
+}
 
+    public List<SeatSelection> getSeatsByShowid(int showid) {
+        return ssrepo.findByShowid_Id(showid);
     }
+}

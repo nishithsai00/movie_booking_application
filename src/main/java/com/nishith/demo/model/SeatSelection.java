@@ -16,7 +16,7 @@ public class SeatSelection {
     @JoinColumn(name="bookingid")
     private  Booking booking;
     private String seat;
-    private String status="Available";
+    private String status="AVAILABLE";
     private int price=100;
     private LocalDateTime lockedAt;
 

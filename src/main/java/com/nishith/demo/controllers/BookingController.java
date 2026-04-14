@@ -27,7 +27,7 @@ public class BookingController {
     }
     @GetMapping("/")
     public List<SeatSelection> showSeatsByShowid(int showid){
-
+       return bservice.getSeatsByShowid(showid);
     }
 
 
@@ -39,8 +39,8 @@ public class BookingController {
       return bservice.bookAticket(booking);
     }
     @PostMapping("/payment")
-    public String paymentCheck(PaymentSimulation paymentSimulation,String cap){
-        return bservice.afterPayment(paymentSimulation,cap);
+    public String paymentCheck(@RequestBody  PaymentSimulation paymentSimulation, @RequestParam String captcha){
+        return bservice.afterPayment(paymentSimulation,captcha);
     }
 }
 

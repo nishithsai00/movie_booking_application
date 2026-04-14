@@ -18,7 +18,17 @@ public class PaymentSimulation {
     @JoinColumn(name="BookingId")
     private Booking bookingid;
     private int ammount_in_rs;
+    private String captcha;
     private String status;
+
+    public String getCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
+    }
+
     private LocalDateTime bookingtime;
 
     public LocalDateTime getBookingtime() {

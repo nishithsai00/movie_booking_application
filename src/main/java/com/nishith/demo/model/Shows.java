@@ -19,7 +19,7 @@ public class Shows {
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private int masterid;
-@JsonFormat(pattern ="dd-MM-yyyy HH:mm:ss")
+//@JsonFormat(pattern ="dd-MM-yyyy HH:mm:ss")
 private LocalDateTime timings;
 @ManyToOne
 @JoinColumn(name="movieid")
