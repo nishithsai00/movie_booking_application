@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class MovieNotFoundException extends RuntimeException {
 	public MovieNotFoundException(int id)
 	{
+
 		super("movie not found with id: "+id);
 	}
 

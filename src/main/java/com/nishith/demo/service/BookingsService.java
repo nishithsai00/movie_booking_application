@@ -131,9 +131,16 @@ public String CancelBooking(int bookingId){
         String username= SecurityContextHolder.getContext().getAuthentication().getName();
         Booking booking=brepo.findById(bookingId).orElseThrow();
         Shows show=srepo.findById(booking.getShow().getId()).orElseThrow();
+        List<SeatSelection> seatSelection=ssrepo.findByBooking(booking);
         long timediff=ChronoUnit.SECONDS.between(LocalDateTime.now(),show.getTimings());
         if(username.equals(booking.getBookedBy())) {
             if (timediff > 10800) {
+                for(SeatSelection s:seatSelection){
+                    s.setStatus("AVAILABLE");
+                    s.setBooking(null);
+                    s.setLockedAt(null);
+                    ssrepo.save(s);
+                }
                 List<String> seats = booking.getSeat();
                 booking.setStatus("CANCELED");
                 PaymentSimulation payment = prepo.findByBookingid_BookingId(bookingId);
@@ -143,12 +150,18 @@ public String CancelBooking(int bookingId){
                 prepo.save(payment);
                 return "Booking cancellation was success";
             }
+            return "cancellation only allowed three hours before show time";
         }
-        return "Invalid user from booked username";
+        return "username mismatch";
 
 }
 
     public List<SeatSelection> getSeatsByShowid(int showid) {
         return ssrepo.findByShowid_Id(showid);
+    }
+
+    public List<Booking> getBookingByUsername() {
+        String username=SecurityContextHolder.getContext().getAuthentication().getName();
+       return brepo.findByBookedBy(username);
     }
 }
