@@ -1,5 +1,6 @@
 package com.nishith.demo.service;
 
+import com.nishith.demo.exceptionHandler.EmptyListException;
 import com.nishith.demo.model.Booking;
 import com.nishith.demo.model.PaymentSimulation;
 import com.nishith.demo.model.SeatSelection;
@@ -10,13 +11,10 @@ import com.nishith.demo.repo.SeatSelectionRepo;
 
 import com.nishith.demo.repo.ShowRepo;
 import jakarta.transaction.Transactional;
-import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -33,12 +31,17 @@ public class BookingsService {
     @Autowired
     private ShowRepo srepo;
 
-    public List<Booking> getallbookings() {
-       return brepo.findAll();
+    public List<Booking> getAllBookings() {
+        List<Booking>bookings=brepo.findAll();
+//         if(bookings.isEmpty()){
+//             throw new EmptyListException("The data was empty in Db");
+//         }
+
+        return bookings;
     }
 
-    public Booking getbyid(int id) {
-        return brepo.findById(id).orElseThrow();
+    public Booking getById(int id) {
+        return brepo.findById(id).orElseThrow(()->new EmptyListException("No Bookings found by id"+id));
     }
 
 

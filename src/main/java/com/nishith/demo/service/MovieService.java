@@ -1,9 +1,9 @@
 package com.nishith.demo.service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.nishith.demo.exceptionHandler.MovieNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -27,8 +27,9 @@ public class MovieService {
 	}
 
 	public Movie getbyid(int num) {
-		
-		return mrepo.findById(num).orElseThrow(()->new MovieNotFoundException(num));
+
+		return mrepo.findById(num).orElseThrow(() -> new MovieNotFoundException(num));
+
 	}
 
 	public void updatemovie(int id, Movie m) {
@@ -44,7 +45,7 @@ public class MovieService {
 		try {
 		m.setImage(img.getBytes());
 		mrepo.save(m);
-		return "added succes";
+		return "added success";
 		
 		}
 		catch(Exception e) {
