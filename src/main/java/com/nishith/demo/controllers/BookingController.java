@@ -24,7 +24,7 @@ public class BookingController {
        return new ResponseEntity<List<Booking>>(bservice.getBookingByUsername(),HttpStatus.FOUND) ;
     }
 
-    @GetMapping("/allbook")
+    @GetMapping("/allbookings")
    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Booking>> getallmovies()
     {
@@ -37,8 +37,8 @@ public class BookingController {
     {
         return new ResponseEntity<Booking>(bservice.getById(id),HttpStatus.FOUND);
     }
-    @GetMapping("/getshows")
-    public ResponseEntity<List<SeatSelection>> showSeatsByShowid(int showid){
+    @GetMapping("/movie/{showid}")
+    public ResponseEntity<List<SeatSelection>> showSeatsByShowid(@PathVariable int showid){
        return new ResponseEntity<List<SeatSelection>>(bservice.getSeatsByShowid(showid),HttpStatus.FOUND);
     }
 

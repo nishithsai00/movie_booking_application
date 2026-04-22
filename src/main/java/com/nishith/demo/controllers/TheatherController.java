@@ -3,6 +3,7 @@ package com.nishith.demo.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.nishith.demo.model.Theather;
@@ -20,11 +21,13 @@ public class TheatherController {
 		return service.alltheathers();
 	}
 	@PostMapping("/theatres")
+	@PreAuthorize("hasRole('ADMIN')")
 	public void addTheather(@RequestBody Theather data)
 	{
 		service.addtheather(data);
 	}
 	@DeleteMapping("/theatres")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String DeleteTheather(@RequestBody Theather theather)
 	{
 		return service.delete(theather);

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +30,7 @@ public class MovieController {
 	MovieService service;
 	@Autowired
 	ShowService showService;
-	@RequestMapping("/")
+	@RequestMapping("/jwt")
 	public String homepage(HttpServletRequest request){
 		return request.getSession().getId();
 	}
@@ -40,12 +41,13 @@ public class MovieController {
 		
 		return new ResponseEntity(service.allmovies(),HttpStatus.OK);
 	}
-	@PostMapping("/movies")
-	public ResponseEntity<Movie> addmovie(@RequestBody Movie movie )
-	{
-		service.addmovie(movie);
-		return new ResponseEntity(HttpStatus.OK);
-	}
+//	@PostMapping("/movies")
+//	@PreAuthorize("hasRole('ADMIN')")
+//	public ResponseEntity<Movie> addmovie(@RequestBody Movie movie )
+//	{
+//		service.addmovie(movie);
+//		return new ResponseEntity(HttpStatus.OK);
+//	}
 	@GetMapping("/movies/{num}")
 	public ResponseEntity<Movie> getbyid(@PathVariable int num)
 	{
@@ -56,12 +58,14 @@ public class MovieController {
 			return new ResponseEntity(HttpStatus.NOT_FOUND);
 	}
 	@PutMapping("/movies/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public void updatemovie(@PathVariable int id,@RequestBody Movie m)
 	{
 		service.updatemovie(id,m);
 		
 	}
-	@PostMapping("/addm")
+	@PostMapping("/addmovie")
+	@PreAuthorize("hasRole('ADMIN')")
 	public void addm(@RequestPart Movie m,@RequestPart(required =false) MultipartFile img)
 	{if (img==null)
 	{
@@ -92,10 +96,10 @@ public class MovieController {
 	}
 	@GetMapping("/movie/{location}")
 	public ResponseEntity<List<Movie>> getByLocation(@PathVariable String location){
-		 return new ResponseEntity(showService.getMovieByLocation(location),HttpStatus.OK);
+		 return new ResponseEntity<List<Movie>>(showService.getMovieByLocation(location),HttpStatus.OK);
 	}
 	@GetMapping("/movie/{location}/{name}")
-	public ResponseEntity<List<Shows>> getByMovienameAndLocation(@PathVariable String name ,String location){
-		return new ResponseEntity(showService.getShowsbyMovienameAndLocation(name,location),HttpStatus.OK);
+	public ResponseEntity<List<Shows>> getByMovienameAndLocation(@PathVariable String name ,@PathVariable String location){
+		return new ResponseEntity<List<Shows>>(showService.getShowsbyMovienameAndLocation(name,location),HttpStatus.OK);
 	}
 }

@@ -160,7 +160,11 @@ public String CancelBooking(int bookingId){
 }
 
     public List<SeatSelection> getSeatsByShowid(int showid) {
-        return ssrepo.findByShowid_Id(showid);
+        List<SeatSelection>seats=  ssrepo.findByShowid_Id(showid);
+        if(seats.isEmpty()){
+            throw new EmptyListException("the list was empty may be the show is invalid");
+        }
+        return seats ;
     }
 
     public List<Booking> getBookingByUsername() {
