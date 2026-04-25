@@ -26,6 +26,12 @@ public class TheatherController {
 	{
 		service.addtheather(data);
 	}
+	@PutMapping("/theatres/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public String edit(@PathVariable int id,@RequestBody Theather theather){
+		service.editById(id,theather);
+		return "Success";
+	}
 	@DeleteMapping("/theatres")
 	@PreAuthorize("hasRole('ADMIN')")
 	public String DeleteTheather(@RequestBody Theather theather)

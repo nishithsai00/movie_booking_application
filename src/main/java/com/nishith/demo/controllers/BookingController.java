@@ -31,7 +31,7 @@ public class BookingController {
         return new ResponseEntity<List<Booking>>(bservice.getAllBookings(), HttpStatus.FOUND);
     }
 
-    @GetMapping("/book/{id}")
+    @GetMapping("/booking/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Booking> getbyid(@PathVariable int id)
     {

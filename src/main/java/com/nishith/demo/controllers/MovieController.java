@@ -4,6 +4,7 @@ package com.nishith.demo.controllers;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.nishith.demo.exceptionHandler.MovieNotFoundException;
 import com.nishith.demo.model.Shows;
 import com.nishith.demo.service.ShowService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,9 +56,10 @@ public class MovieController {
 		if(m!=null)
 			return new ResponseEntity( m,HttpStatus.OK);
 		else
-			return new ResponseEntity(HttpStatus.NOT_FOUND);
+			throw new MovieNotFoundException(num);
+//			return new ResponseEntity(HttpStatus.NOT_FOUND);
 	}
-	@PutMapping("/movies/{id}")
+	@PutMapping("/movie/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public void updatemovie(@PathVariable int id,@RequestBody Movie m)
 	{
@@ -75,7 +77,7 @@ public class MovieController {
 		service.addm(m,img);
 	}
 	}
-	@GetMapping("/m/{id}/image")
+	@GetMapping("/movie/{id}/image")
 	public ResponseEntity<byte[]> getimg(@PathVariable int id)
 	{
 		Movie m=service.getbyid(id);

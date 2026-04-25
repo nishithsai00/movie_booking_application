@@ -4,6 +4,7 @@ package com.nishith.demo.controllers;
 
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,10 @@ public String addshow(@RequestBody Shows sh)
 		service.deleteAshow(movieId,theatherId);
 		return "Show successfully removed";
 	}
-
+@PutMapping("/shows/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public String createExistingShow(@PathVariable int id, @RequestBody LocalDateTime localDateTime){
+		service.createExistingShow(id,localDateTime);
+		return "show extended";
+}
 }

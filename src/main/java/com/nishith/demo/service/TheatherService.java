@@ -4,6 +4,7 @@ package com.nishith.demo.service;
 
 import java.util.List;
 
+import com.nishith.demo.exceptionHandler.EmptyListException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,5 +36,17 @@ public class TheatherService {
 
 	public List<Theather> getByLocation(String location) {
 		return trepo.findByLocation(location);
+	}
+
+	public void editById(int id, Theather theather) {
+		Theather data =trepo.findById(id).orElseThrow(()->new EmptyListException("Empty Data with the provided Id"));
+		if(theather.getName() != null ){
+			data.setName(theather.getName());
+		}
+		if(theather.getLocation()!=null){
+			data.setLocation(theather.getLocation());
+		}
+		trepo.save(data);
+
 	}
 }
