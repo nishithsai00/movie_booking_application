@@ -1,20 +1,19 @@
 package com.nishith.demo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import org.hibernate.id.factory.internal.AutoGenerationTypeStrategy;
-import org.springframework.boot.autoconfigure.web.WebProperties;
-import org.springframework.expression.spel.ast.Identifier;
+import jakarta.persistence.*;
+
 
 @Entity
+@Table(name="Users")
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 private int id;
+    @Column(unique = true,nullable = false)
     private String username;
+    @Column(nullable = false)
         private String password;
+    @Column(nullable = false)
         private String role;
 
     public String getRole() {
@@ -52,7 +51,6 @@ private int id;
         return "Users{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", role: " +role +
                 '}';
     }

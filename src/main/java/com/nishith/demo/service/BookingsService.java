@@ -62,10 +62,14 @@ public class BookingsService {
         for (String s : seats) {
             SeatSelection entity=ssrepo.findByShowid_IdAndSeat(sh, s);
             if (!(entity==null)) {
-                long time = ChronoUnit.SECONDS.between(entity.getLockedAt(),LocalDateTime.now());
-                if(time>300 &&entity.getStatus().equals("LOCKED")) {
-                    entity.setStatus("AVAILABLE");
-                    ssrepo.save(entity);}
+                if(entity.getLockedAt()!=null) {
+                    long time = ChronoUnit.SECONDS.between(entity.getLockedAt(), LocalDateTime.now());
+                    if (time > 300 && entity.getStatus().equals("LOCKED")) {
+                        entity.setStatus("AVAILABLE");
+                        entity.setLockedAt(null);
+                        ssrepo.save(entity);
+                    }
+                }
 
                     if (entity.getStatus().equals("LOCKED") || entity.getStatus().equals("BOOKED")) {
                         return "The seats" + entity.getSeat() + "are not available";
@@ -73,29 +77,36 @@ public class BookingsService {
 
             }
         }
-        for(String s:seats){
-           SeatSelection seatSelection=ssrepo.findByShowid_IdAndSeat(sh,s);
-            seatSelection.setStatus("LOCKED");
-            seatSelection.setLockedAt(LocalDateTime.now());
-            seatSelection.setBooking(booking);
-            ssrepo.save(seatSelection);
+              booking.setBookingdate(LocalDateTime.now());
+              String username = SecurityContextHolder.getContext().getAuthentication().getName();
+              booking.setBookedBy(username);
+              booking.setStatus("HOLD");
+              brepo.save(booking);
+        for(String s:seats) {
+                SeatSelection seatSelection = ssrepo.findByShowid_IdAndSeat(sh, s);
+                if(seatSelection!=null) {
+                    seatSelection.setStatus("LOCKED");
+                    seatSelection.setLockedAt(LocalDateTime.now());
+                    seatSelection.setBooking(booking);
+                    ssrepo.save(seatSelection);
+                }
+
         }
-        booking.setBookingdate(LocalDateTime.now());
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        booking.setBookedBy(username);
-        booking.setStatus("HOLD");
-        brepo.save(booking);
 
-        SeatSelection seatSelection=new SeatSelection();
-        int total=seats.size()*seatSelection.getPrice();
 
-        PaymentSimulation payment =new PaymentSimulation();
-        payment.setAmmount_in_rs(total);
-        payment.setStatus("HOLD");
-        payment.setBookingtime(LocalDateTime.now());
-        payment.setBookingid(booking);
-        payment.setCaptcha(captcha);
-        prepo.save(payment);
+//            SeatSelection seatSelection = new SeatSelection();
+//            int total = seats.size() * seatSelection.getPrice();
+        int pricePerSeat=100;
+        int total= seats.size()*pricePerSeat;
+
+            PaymentSimulation payment = new PaymentSimulation();
+            payment.setAmmount_in_rs(total);
+            payment.setStatus("HOLD");
+            payment.setBookingtime(LocalDateTime.now());
+            payment.setBookingid(booking);
+            payment.setCaptcha(captcha);
+            prepo.save(payment);
+
         return "Your Total Payment of : "+total +" .Complete the payment to Conform booking reference id : "+booking.getBookingId()+
                 " please enter captcha along with total Amount "+captcha;
 
@@ -103,26 +114,30 @@ public class BookingsService {
     @Transactional
     public String afterPayment(PaymentSimulation payment ,String cap) {
         if (!(payment == null)) {
-            LocalDateTime paymentTime = payment.getBookingtime();
+            PaymentSimulation paymentSimulation =prepo.findByBookingid_BookingId(payment.getBookingid().getBookingId());
+            if(paymentSimulation==null){
+                return "invalid payment details";
+            }
+            LocalDateTime paymentTime = paymentSimulation.getBookingtime();
             long timeDiff = ChronoUnit.SECONDS.between(paymentTime, LocalDateTime.now());
             if (timeDiff > 300) {
                 return "Payment failed due to over Late Payment try to book again to continue";
             }
 
-            PaymentSimulation paymentSimulation =prepo.findByBookingid_BookingId(payment.getBookingid().getBookingId());
+
 
        if(cap.equals(paymentSimulation.getCaptcha()) &&  payment.getAmmount_in_rs()==paymentSimulation.getAmmount_in_rs())
        {
            paymentSimulation.setStatus("SUCCESS");
            prepo.save(paymentSimulation);
-          Booking booking=brepo.findByPayment(payment);
+          Booking booking=brepo.findByPayment(paymentSimulation);
           booking.setStatus("SUCCESS");
           brepo.save(booking);
           List<SeatSelection> ss=ssrepo.findByBooking(booking);
            for (SeatSelection seat : ss) {
                seat.setStatus("BOOKED");
-               ssrepo.save(seat);
            }
+           ssrepo.saveAll(ss);
            return "Booking was success with booking reference : " +booking.getBookingId();
         }
         }
@@ -130,6 +145,7 @@ public class BookingsService {
 
 
     }
+    @Transactional
 public String CancelBooking(int bookingId){
         String username= SecurityContextHolder.getContext().getAuthentication().getName();
         Booking booking=brepo.findById(bookingId).orElseThrow();

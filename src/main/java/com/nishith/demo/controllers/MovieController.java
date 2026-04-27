@@ -31,10 +31,7 @@ public class MovieController {
 	MovieService service;
 	@Autowired
 	ShowService showService;
-	@RequestMapping("/jwt")
-	public String homepage(HttpServletRequest request){
-		return request.getSession().getId();
-	}
+
 	
 	@GetMapping("/movies")
 	public ResponseEntity<List<Movie>>allmovies()
@@ -61,14 +58,14 @@ public class MovieController {
 	}
 	@PutMapping("/movie/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public void updatemovie(@PathVariable int id,@RequestBody Movie m)
+	public ResponseEntity<Void> updatemovie(@PathVariable int id,@RequestBody Movie m)
 	{
 		service.updatemovie(id,m);
-		
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	@PostMapping("/addmovie")
 	@PreAuthorize("hasRole('ADMIN')")
-	public void addm(@RequestPart Movie m,@RequestPart(required =false) MultipartFile img)
+	public ResponseEntity<Void> addm(@RequestPart Movie m,@RequestPart(required =false) MultipartFile img)
 	{if (img==null)
 	{
 		service.adddata(m);
@@ -76,6 +73,7 @@ public class MovieController {
 	else {
 		service.addm(m,img);
 	}
+	return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 	@GetMapping("/movie/{id}/image")
 	public ResponseEntity<byte[]> getimg(@PathVariable int id)
@@ -86,7 +84,7 @@ public class MovieController {
 	    		.contentType(MediaType.valueOf(m.getImgtype()))
 	    		.body(b);
 	}
-	@GetMapping("/movie/{name}")
+	@GetMapping("/movie/name/{name}")
 	public ResponseEntity<Movie> byname(@PathVariable String name)
 	{
 		return new ResponseEntity(service.byname(name),HttpStatus.OK);
@@ -96,7 +94,7 @@ public class MovieController {
 	{
 		return service.sort(id,name,date);
 	}
-	@GetMapping("/movie/{location}")
+	@GetMapping("/movie/location/{location}")
 	public ResponseEntity<List<Movie>> getByLocation(@PathVariable String location){
 		 return new ResponseEntity<List<Movie>>(showService.getMovieByLocation(location),HttpStatus.OK);
 	}

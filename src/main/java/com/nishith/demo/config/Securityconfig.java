@@ -36,6 +36,7 @@ public class Securityconfig
                 .requestMatchers("/movies").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/signup","/login").permitAll()
+
                // .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
 
