@@ -1,0 +1,52 @@
+package com.nishith.reserveShow.service;
+
+
+
+import java.util.List;
+
+import com.nishith.reserveShow.exceptionHandler.EmptyListException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.nishith.reserveShow.model.Theather;
+import com.nishith.reserveShow.repo.TheatherRepo;
+
+@Service
+public class TheatherService {
+	@Autowired
+	TheatherRepo trepo;
+	public List<Theather> alltheathers()
+	{
+		return trepo.findAll();
+	}
+	public void addtheather(Theather data) {
+		trepo.save(data);
+	}
+
+    public String delete(Theather theather) {
+		try {
+			trepo.deleteById(theather.getId());
+			return "deleted by entity";
+		}
+		catch (Exception e){
+			trepo.delete(theather);
+			return "deleted by id";
+		}
+    }
+
+	public List<Theather> getByLocation(String location) {
+		return trepo.findByLocation(location);
+	}
+
+	public void editById(int id, Theather theather) {
+		Theather data =trepo.findById(id).orElseThrow(()->new EmptyListException("Empty Data with the provided Id"));
+		if(theather.getName() != null ){
+			data.setName(theather.getName());
+		}
+		if(theather.getLocation()!=null){
+			data.setLocation(theather.getLocation());
+		}
+		trepo.save(data);
+
+	}
+}
