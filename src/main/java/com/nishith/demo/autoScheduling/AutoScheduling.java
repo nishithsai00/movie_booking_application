@@ -1,7 +1,8 @@
-package com.nishith.demo.service;
+package com.nishith.demo.autoScheduling;
 
 import com.nishith.demo.model.SeatSelection;
 import com.nishith.demo.repo.SeatSelectionRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class AutoScheduling {
 
 
     @Scheduled(fixedRate = 60000)
+    @Transactional
     public void ReleaseSeats(){
         List<SeatSelection> seatSelections=ssrepo.findBySeatStatus("LOCKED");
         for(SeatSelection seat:seatSelections){

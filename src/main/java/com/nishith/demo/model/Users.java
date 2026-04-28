@@ -1,6 +1,8 @@
 package com.nishith.demo.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 
 @Entity
@@ -10,8 +12,12 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 private int id;
     @Column(unique = true,nullable = false)
+    @NotBlank(message = "Username must not be Blank")
+    @Size(min = 3,max = 12,message = "Username must stay in range of 3 to 12")
     private String username;
     @Column(nullable = false)
+    @NotBlank(message = "Password must not be Blank")
+    @Size(min=6,message = "Password must contains range of 6")
         private String password;
     @Column(nullable = false)
         private String role;
@@ -50,7 +56,7 @@ private int id;
     public String toString() {
         return "Users{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
+                ", username='" + username +
                 ", role: " +role +
                 '}';
     }
