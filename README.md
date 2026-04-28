@@ -1,4 +1,4 @@
-# 🎬 BookMyShow — Movie Ticket Booking Backend
+# 🎬 ReserveShow — Movie Ticket Booking Backend
 
 A production-grade REST API backend replicating core BookMyShow features. Built with Spring Boot, featuring JWT authentication, concurrent seat booking with pessimistic locking, automated seat release scheduling, and comprehensive exception handling.
 
