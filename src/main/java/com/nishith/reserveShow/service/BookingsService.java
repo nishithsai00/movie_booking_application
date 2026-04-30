@@ -55,10 +55,10 @@ public class BookingsService {
         String captcha=String.valueOf(rand);
         List<String>seats =booking.getSeat();
 
-     if(seats.size()>10){
-         return "only less then 10 seats are allowed for Booking!!!";
-     }
-    int sh= booking.getShow().getId();
+        if(seats.size()>10){
+            return "only less then 10 seats are allowed for Booking!!!";
+        }
+        int sh= booking.getShow().getId();
         for (String s : seats) {
             SeatSelection entity=ssrepo.findByShowid_IdAndSeat(sh, s);
             if (!(entity==null)) {
@@ -71,25 +71,25 @@ public class BookingsService {
                     }
                 }
 
-                    if (entity.getStatus().equals("LOCKED") || entity.getStatus().equals("BOOKED")) {
-                        return "The seats" + entity.getSeat() + "are not available";
-                    }
+                if (entity.getStatus().equals("LOCKED") || entity.getStatus().equals("BOOKED")) {
+                    return "The seats" + entity.getSeat() + "are not available";
+                }
 
             }
         }
-              booking.setBookingdate(LocalDateTime.now());
-              String username = SecurityContextHolder.getContext().getAuthentication().getName();
-              booking.setBookedBy(username);
-              booking.setStatus("HOLD");
-              brepo.save(booking);
+        booking.setBookingdate(LocalDateTime.now());
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        booking.setBookedBy(username);
+        booking.setStatus("HOLD");
+        brepo.save(booking);
         for(String s:seats) {
-                SeatSelection seatSelection = ssrepo.findByShowid_IdAndSeat(sh, s);
-                if(seatSelection!=null) {
-                    seatSelection.setStatus("LOCKED");
-                    seatSelection.setLockedAt(LocalDateTime.now());
-                    seatSelection.setBooking(booking);
-                    ssrepo.save(seatSelection);
-                }
+            SeatSelection seatSelection = ssrepo.findByShowid_IdAndSeat(sh, s);
+            if(seatSelection!=null) {
+                seatSelection.setStatus("LOCKED");
+                seatSelection.setLockedAt(LocalDateTime.now());
+                seatSelection.setBooking(booking);
+                ssrepo.save(seatSelection);
+            }
 
         }
 
@@ -99,13 +99,15 @@ public class BookingsService {
         int pricePerSeat=100;
         int total= seats.size()*pricePerSeat;
 
-            PaymentSimulation payment = new PaymentSimulation();
-            payment.setAmmount_in_rs(total);
-            payment.setStatus("HOLD");
-            payment.setBookingtime(LocalDateTime.now());
-            payment.setBookingid(booking);
-            payment.setCaptcha(captcha);
-            prepo.save(payment);
+        PaymentSimulation payment = new PaymentSimulation();
+        payment.setAmmount_in_rs(total);
+        payment.setStatus("HOLD");
+        payment.setBookingtime(LocalDateTime.now());
+        payment.setBookingid(booking);
+        payment.setCaptcha(captcha);
+        prepo.save(payment);
+        booking.setPayment(payment);
+        brepo.save(booking);
 
         return "Your Total Payment of : "+total +" .Complete the payment to Conform booking reference id : "+booking.getBookingId()+
                 " please enter captcha along with total Amount "+captcha;
@@ -126,27 +128,27 @@ public class BookingsService {
 
 
 
-       if(cap.equals(paymentSimulation.getCaptcha()) &&  payment.getAmmount_in_rs()==paymentSimulation.getAmmount_in_rs())
-       {
-           paymentSimulation.setStatus("SUCCESS");
-           prepo.save(paymentSimulation);
-          Booking booking=brepo.findByPayment(paymentSimulation);
-          booking.setStatus("SUCCESS");
-          brepo.save(booking);
-          List<SeatSelection> ss=ssrepo.findByBooking(booking);
-           for (SeatSelection seat : ss) {
-               seat.setStatus("BOOKED");
-           }
-           ssrepo.saveAll(ss);
-           return "Booking was success with booking reference : " +booking.getBookingId();
-        }
+            if(cap.equals(paymentSimulation.getCaptcha()) &&  payment.getAmmount_in_rs()==paymentSimulation.getAmmount_in_rs())
+            {
+                paymentSimulation.setStatus("SUCCESS");
+                prepo.save(paymentSimulation);
+                Booking booking=brepo.findByPayment(paymentSimulation);
+                booking.setStatus("SUCCESS");
+                brepo.save(booking);
+                List<SeatSelection> ss=ssrepo.findByBooking(booking);
+                for (SeatSelection seat : ss) {
+                    seat.setStatus("BOOKED");
+                }
+                ssrepo.saveAll(ss);
+                return "Booking was success with booking reference : " +booking.getBookingId();
+            }
         }
         return "Payment details are invalid please retry with valid details !!";
 
 
     }
     @Transactional
-public String CancelBooking(int bookingId){
+    public String CancelBooking(int bookingId){
         String username= SecurityContextHolder.getContext().getAuthentication().getName();
         Booking booking=brepo.findById(bookingId).orElseThrow();
         Shows show=srepo.findById(booking.getShow().getId()).orElseThrow();
@@ -173,7 +175,7 @@ public String CancelBooking(int bookingId){
         }
         return "username mismatch";
 
-}
+    }
 
     public List<SeatSelection> getSeatsByShowid(int showid) {
         List<SeatSelection>seats=  ssrepo.findByShowid_Id(showid);
@@ -185,6 +187,6 @@ public String CancelBooking(int bookingId){
 
     public List<Booking> getBookingByUsername() {
         String username=SecurityContextHolder.getContext().getAuthentication().getName();
-       return brepo.findByBookedBy(username);
+        return brepo.findByBookedBy(username);
     }
 }
