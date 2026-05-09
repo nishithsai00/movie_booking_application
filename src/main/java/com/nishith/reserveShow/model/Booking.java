@@ -22,7 +22,7 @@ public class Booking {
     private PaymentSimulation payment;
     @ElementCollection
     private List<String> seat;
-    private String status;
+    private Status status;
     private String bookedBy;
     private LocalDateTime Bookingdate;
 
@@ -42,11 +42,11 @@ public class Booking {
         return show;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

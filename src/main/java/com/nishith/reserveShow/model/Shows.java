@@ -31,9 +31,6 @@ private Theather theather;
 		this.timings = timings;
 	}
 
-	public int getMasterid() {
-		return masterid;
-	}
 
 
 public int getId() {

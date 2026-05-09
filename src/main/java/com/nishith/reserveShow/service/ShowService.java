@@ -1,10 +1,13 @@
 package com.nishith.reserveShow.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.nishith.reserveShow.exceptionHandler.EmptyListException;
 import com.nishith.reserveShow.model.Movie;
 import com.nishith.reserveShow.model.SeatSelection;
+import com.nishith.reserveShow.model.Status;
 import com.nishith.reserveShow.repo.SeatSelectionRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +25,25 @@ public class ShowService {
 
 	@Transactional
 public String createExistingShow(int id,LocalDateTime date){
-	Shows s=srepo.findById(id).orElse(null);
-    s.setTimings(date);
-	srepo.save(s);
-	List<SeatSelection> entity=ssrepo.findByShowid_Id(id);
-	for(SeatSelection seat:entity){
+	Shows oldShow=srepo.findById(id).orElseThrow(()->new EmptyListException("show not found with the id :"+id));
+	Shows newShow=new Shows();
+	newShow.setTimings(date);
+	newShow.setMovie(oldShow.getMovie());
+	newShow.setTheather(oldShow.getTheather());
+	srepo.save(newShow);
+
+	List<SeatSelection> oldSeats=ssrepo.findByShowid_Id(id);
+	List<SeatSelection> newSeats=new ArrayList<>();
+	for(SeatSelection oldSeat:oldSeats){
+		SeatSelection seat=new SeatSelection();
 		seat.setBooking(null);
-		seat.setShowid(s);
-		seat.setStatus("AVAILABLE");
+		seat.setSeat(oldSeat.getSeat());
+		seat.setShowid(newShow);
+		seat.setStatus(Status.AVAILABLE);
 		seat.setLockedAt(null);
-		ssrepo.save(seat);
+		newSeats.add(seat);
 	}
+	ssrepo.saveAll(newSeats);
 	return "the show is updated successfully";
 }
 
@@ -42,15 +53,16 @@ public String createExistingShow(int id,LocalDateTime date){
      @Transactional
 	public int addshow(Shows sh) {
 		srepo.save(sh);
-
+List<SeatSelection> seats=new ArrayList<>();
 		for(char i='A';i<'M';i++){
 			for(int j=1;j<9;j++){
 				SeatSelection seat=new SeatSelection();
               seat.setShowid(sh);
 			  seat.setSeat(i+""+j);
-			  ssrepo.save(seat);
+			 seats.add(seat);
 			}
 		}
+		ssrepo.saveAll(seats);
 
 		return sh.getId();
 	}

@@ -16,8 +16,10 @@ public class UserAuthService
     UserRepo repo;
     @Autowired
             JwtService jwtService;
+    @Autowired
+    BCryptPasswordEncoder encoder;
 
- BCryptPasswordEncoder encoder=new BCryptPasswordEncoder(12);
+// BCryptPasswordEncoder encoder=new BCryptPasswordEncoder(12);
 public void register(Users u)
 {
     u.setPassword(encoder.encode(u.getPassword()));

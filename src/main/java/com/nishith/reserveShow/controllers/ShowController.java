@@ -15,6 +15,7 @@ import com.nishith.reserveShow.model.Shows;
 import com.nishith.reserveShow.service.ShowService;
 
 @RestController
+@CrossOrigin
 public class ShowController {
 	@Autowired
 	ShowService service;
@@ -31,11 +32,11 @@ public String addshow(@RequestBody Shows sh)
 }
 @DeleteMapping("/removeshow")
 @PreAuthorize("hasRole('ADMIN')")
-	public String removeAshow(@RequestBody int movieId,int theatherId ){
+	public String removeAshow(@RequestParam int movieId,@RequestParam int theatherId ){
 		service.deleteAshow(movieId,theatherId);
 		return "Show successfully removed";
 	}
-@PutMapping("/shows/{id}")
+@PostMapping("/updateshow/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public String createExistingShow(@PathVariable int id, @RequestBody LocalDateTime localDateTime){
 		service.createExistingShow(id,localDateTime);

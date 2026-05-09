@@ -19,7 +19,7 @@ public class PaymentSimulation {
     private Booking bookingid;
     private int ammount_in_rs;
     private String captcha;
-    private String status;
+    private Status status;
 
     public String getCaptcha() {
         return captcha;
@@ -39,11 +39,11 @@ public class PaymentSimulation {
         this.bookingtime = bookingtime;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

@@ -15,8 +15,13 @@ public class SeatSelection {
     @ManyToOne
     @JoinColumn(name="bookingid")
     private  Booking booking;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     private String seat;
-    private String status="AVAILABLE";
+    private Status status=Status.AVAILABLE;
     private int price=100;
     private LocalDateTime lockedAt;
 
@@ -48,11 +53,11 @@ public class SeatSelection {
         this.price = price;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

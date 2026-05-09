@@ -25,6 +25,8 @@ public class AutoScheduling {
             long time = ChronoUnit.SECONDS.between(seat.getLockedAt(), LocalDateTime.now());
             if(time>300){
                 seat.setStatus("AVAILABLE");
+                seat.setBooking(null);
+                seat.setLockedAt(null);
                 ssrepo.save(seat);
             }
 

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 public class BookingController {
 
     @Autowired
@@ -21,25 +22,25 @@ public class BookingController {
 
     @GetMapping("/mybookings")
     public ResponseEntity<List<Booking>> getBookingByUsername(){
-       return new ResponseEntity<List<Booking>>(bservice.getBookingByUsername(),HttpStatus.FOUND) ;
+       return new ResponseEntity<List<Booking>>(bservice.getBookingByUsername(),HttpStatus.OK) ;
     }
 
     @GetMapping("/allbookings")
    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Booking>> getallmovies()
     {
-        return new ResponseEntity<List<Booking>>(bservice.getAllBookings(), HttpStatus.FOUND);
+        return new ResponseEntity<List<Booking>>(bservice.getAllBookings(), HttpStatus.OK);
     }
 
     @GetMapping("/booking/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Booking> getbyid(@PathVariable int id)
     {
-        return new ResponseEntity<Booking>(bservice.getById(id),HttpStatus.FOUND);
+        return new ResponseEntity<Booking>(bservice.getById(id),HttpStatus.OK);
     }
     @GetMapping("/movie/{showid}")
     public ResponseEntity<List<SeatSelection>> showSeatsByShowid(@PathVariable int showid){
-       return new ResponseEntity<List<SeatSelection>>(bservice.getSeatsByShowid(showid),HttpStatus.FOUND);
+       return new ResponseEntity<List<SeatSelection>>(bservice.getSeatsByShowid(showid),HttpStatus.OK);
     }
 
 

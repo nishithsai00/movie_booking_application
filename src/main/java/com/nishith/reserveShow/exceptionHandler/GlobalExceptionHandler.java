@@ -3,11 +3,11 @@ package com.nishith.reserveShow.exceptionHandler;
 import com.nishith.reserveShow.model.ErrorMessage;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
-
-import org.apache.tomcat.websocket.AuthenticationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -65,6 +65,14 @@ public ResponseEntity<ErrorMessage> methodValidEx(MethodArgumentNotValidExceptio
 
     ErrorMessage error =new ErrorMessage(HttpStatus.BAD_REQUEST.value(),errors,System.currentTimeMillis());
     return new ResponseEntity<ErrorMessage>(error,HttpStatus.BAD_REQUEST);
+}
+@ExceptionHandler(DataIntegrityViolationException.class)
+public ResponseEntity<ErrorMessage> usernameError(DataIntegrityViolationException exception){
+    ErrorMessage error = new ErrorMessage(
+            HttpStatus.CONFLICT.value(),
+            "username is already registered please choose another username to continue",
+            System.currentTimeMillis());
+    return new ResponseEntity<ErrorMessage>(error, HttpStatus.CONFLICT);
 }
 @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> globalError(Exception e){

@@ -63,13 +63,17 @@ public class Securityconfig
 //
 //        return new InMemoryUserDetailsManager(user1,user2);
 //    }
+    @Bean
+    public BCryptPasswordEncoder encoder(){
+        return new BCryptPasswordEncoder(12);
+    }
     @Autowired
 private UserDetailsService uds;
     @Bean
     public AuthenticationProvider authenticationProvider()
     {
         DaoAuthenticationProvider provider =new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+        provider.setPasswordEncoder(encoder());
         provider.setUserDetailsService(uds);
         return provider;
     }

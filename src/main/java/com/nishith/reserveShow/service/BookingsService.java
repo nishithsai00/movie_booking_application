@@ -1,10 +1,7 @@
 package com.nishith.reserveShow.service;
 
 import com.nishith.reserveShow.exceptionHandler.EmptyListException;
-import com.nishith.reserveShow.model.Booking;
-import com.nishith.reserveShow.model.PaymentSimulation;
-import com.nishith.reserveShow.model.SeatSelection;
-import com.nishith.reserveShow.model.Shows;
+import com.nishith.reserveShow.model.*;
 import com.nishith.reserveShow.repo.BookingsRepo;
 import com.nishith.reserveShow.repo.PaymentRepo;
 import com.nishith.reserveShow.repo.SeatSelectionRepo;
@@ -64,14 +61,14 @@ public class BookingsService {
             if (!(entity==null)) {
                 if(entity.getLockedAt()!=null) {
                     long time = ChronoUnit.SECONDS.between(entity.getLockedAt(), LocalDateTime.now());
-                    if (time > 300 && entity.getStatus().equals("LOCKED")) {
-                        entity.setStatus("AVAILABLE");
+                    if (time > 300 && entity.getStatus().equals(Status.LOCKED)) {
+                        entity.setStatus(Status.AVAILABLE);
                         entity.setLockedAt(null);
                         ssrepo.save(entity);
                     }
                 }
 
-                if (entity.getStatus().equals("LOCKED") || entity.getStatus().equals("BOOKED")) {
+                if (entity.getStatus().equals(Status.LOCKED) || entity.getStatus().equals(Status.BOOKED)) {
                     return "The seats" + entity.getSeat() + "are not available";
                 }
 
@@ -80,12 +77,12 @@ public class BookingsService {
         booking.setBookingdate(LocalDateTime.now());
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         booking.setBookedBy(username);
-        booking.setStatus("HOLD");
+        booking.setStatus(Status.HOLD);
         brepo.save(booking);
         for(String s:seats) {
             SeatSelection seatSelection = ssrepo.findByShowid_IdAndSeat(sh, s);
             if(seatSelection!=null) {
-                seatSelection.setStatus("LOCKED");
+                seatSelection.setStatus(Status.LOCKED);
                 seatSelection.setLockedAt(LocalDateTime.now());
                 seatSelection.setBooking(booking);
                 ssrepo.save(seatSelection);
@@ -101,7 +98,7 @@ public class BookingsService {
 
         PaymentSimulation payment = new PaymentSimulation();
         payment.setAmmount_in_rs(total);
-        payment.setStatus("HOLD");
+        payment.setStatus(Status.HOLD);
         payment.setBookingtime(LocalDateTime.now());
         payment.setBookingid(booking);
         payment.setCaptcha(captcha);
@@ -130,14 +127,14 @@ public class BookingsService {
 
             if(cap.equals(paymentSimulation.getCaptcha()) &&  payment.getAmmount_in_rs()==paymentSimulation.getAmmount_in_rs())
             {
-                paymentSimulation.setStatus("SUCCESS");
+                paymentSimulation.setStatus(Status.SUCCESS);
                 prepo.save(paymentSimulation);
                 Booking booking=brepo.findByPayment(paymentSimulation);
-                booking.setStatus("SUCCESS");
+                booking.setStatus(Status.SUCCESS);
                 brepo.save(booking);
                 List<SeatSelection> ss=ssrepo.findByBooking(booking);
                 for (SeatSelection seat : ss) {
-                    seat.setStatus("BOOKED");
+                    seat.setStatus(Status.BOOKED);
                 }
                 ssrepo.saveAll(ss);
                 return "Booking was success with booking reference : " +booking.getBookingId();
@@ -157,15 +154,15 @@ public class BookingsService {
         if(username.equals(booking.getBookedBy())) {
             if (timediff > 10800) {
                 for(SeatSelection s:seatSelection){
-                    s.setStatus("AVAILABLE");
+                    s.setStatus(Status.AVAILABLE);
                     s.setBooking(null);
                     s.setLockedAt(null);
                     ssrepo.save(s);
                 }
                 List<String> seats = booking.getSeat();
-                booking.setStatus("CANCELED");
+                booking.setStatus(Status.CANCELED);
                 PaymentSimulation payment = prepo.findByBookingid_BookingId(bookingId);
-                payment.setStatus("CANCELED");
+                payment.setStatus(Status.CANCELED);
                 payment.setBookingid(booking);
                 brepo.save(booking);
                 prepo.save(payment);
