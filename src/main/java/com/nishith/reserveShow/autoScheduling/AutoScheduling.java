@@ -1,6 +1,7 @@
 package com.nishith.reserveShow.autoScheduling;
 
 import com.nishith.reserveShow.model.SeatSelection;
+import com.nishith.reserveShow.model.Status;
 import com.nishith.reserveShow.repo.SeatSelectionRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class AutoScheduling {
         for(SeatSelection seat:seatSelections){
             long time = ChronoUnit.SECONDS.between(seat.getLockedAt(), LocalDateTime.now());
             if(time>300){
-                seat.setStatus("AVAILABLE");
+                seat.setStatus(Status.AVAILABLE);
                 seat.setBooking(null);
                 seat.setLockedAt(null);
                 ssrepo.save(seat);
