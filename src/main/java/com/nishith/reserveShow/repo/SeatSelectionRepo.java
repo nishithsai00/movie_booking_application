@@ -2,6 +2,7 @@ package com.nishith.reserveShow.repo;
 
 import com.nishith.reserveShow.model.Booking;
 import com.nishith.reserveShow.model.SeatSelection;
+import com.nishith.reserveShow.model.Status;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -20,5 +21,5 @@ public interface SeatSelectionRepo extends JpaRepository<SeatSelection,Integer> 
     @Query ("SELECT s FROM SeatSelection s WHERE s.showid.id=:showid AND s.seat=:seat")
     SeatSelection findByShowid_IdAndSeat(@Param("showid") int id, @Param("seat") String seat);
     @Query("SELECT s FROM SeatSelection s WHERE s.status=:status")
-    List<SeatSelection> findBySeatStatus(@Param("status") String status);
+    List<SeatSelection> findBySeatStatus(@Param("status") Status status);
 }
