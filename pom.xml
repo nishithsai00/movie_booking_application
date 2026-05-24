@@ -109,13 +109,17 @@
 <!--		</dependency>-->
 
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
-		</dependency>
-
-
+		</dependency> -->
+	<!-- for mysql use the above dependency , for postgresql use below dependency-->
+<dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <scope>runtime</scope>
+</dependency>
 	</dependencies>
 
 	<build>
