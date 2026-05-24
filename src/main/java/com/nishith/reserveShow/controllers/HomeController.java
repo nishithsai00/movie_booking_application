@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
     @RequestMapping("/")
     public String urls(){
-        return "please do vist the below url to test api's -> http://localhost:8080/swagger-ui/index.html " ;
+        return "please do vist the below url to test api's -> http://localhost:8080/swagger-ui.html " ;
     }
 }
