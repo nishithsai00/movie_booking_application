@@ -1,10 +1,20 @@
-# 🎬 ReserveShow — Movie Ticket Booking Backend
+[![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk&logoColor=white)](https://www.oracle.com/java/technologies/downloads/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![JWT](https://img.shields.io/badge/JWT-jjwt%200.12.6-black?logo=jsonwebtokens&logoColor=white)](https://github.com/jwtk/jjwt)
+[![Docker](https://img.shields.io/badge/Docker-multi--stage-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-4169E1?logo=postgresql&logoColor=white)](https://supabase.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](https://github.com/nishithsai00/movie_booking_application/actions)
+[![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-46E3B7?logo=render&logoColor=white)](https://movie-booking-application-8t3w.onrender.com/swagger-ui/index.html)
+# ReserveShow
 
-A production-grade REST API backend replicating core BookMyShow features. Built with Spring Boot, featuring JWT authentication, concurrent seat booking with pessimistic locking, automated seat release scheduling, and comprehensive exception handling.
+Movie ticket booking REST API. Handles concurrent seat booking, JWT auth, and automated seat release scheduling.
+
+Live: https://movie-booking-application-8t3w.onrender.com/swagger-ui/index.html
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
 | Technology | Purpose |
 |------------|---------|
@@ -13,33 +23,39 @@ A production-grade REST API backend replicating core BookMyShow features. Built 
 | Spring Security | Authentication & authorization |
 | JWT (jjwt 0.12.6) | Stateless token-based auth |
 | Spring Data JPA + Hibernate | ORM & database access |
-| MySQL 8 | Relational database |
+| MySQL 8 | Local development database |
+| PostgreSQL (Supabase) | Production database |
+| Docker (multi-stage build) | Maven compile to JRE Alpine runtime |
+| GitHub Actions | CI/CD — build and deploy on push |
+| Render | Cloud deployment |
 | Maven | Build & dependency management |
 
----
-
-## 🚀 Key Features
-
-- **JWT Authentication** — Stateless login with role-based access control (USER / ADMIN)
-- **Pessimistic Locking** — DB-level write locks on seat rows prevent double-booking under concurrent requests
-- **Seat Hold & Expiry** — Seats locked for 5 minutes during booking; automatically released if payment is not completed
-- **Scheduled Job** — Spring `@Scheduled` task runs every 60 seconds to release expired seat locks
-- **Payment Simulation** — Captcha-based payment verification with 5-minute payment timeout
-- **Booking Cancellation** — Users can cancel bookings up to 3 hours before show time
-- **Global Exception Handling** — Clean error responses for all exceptions including JWT errors, validation failures, and access denial — no stacktraces exposed
-- **Input Validation** — Jakarta Bean Validation on all user inputs with descriptive error messages
-- **Image Upload** — Movie poster upload and retrieval via multipart API
+Monitored during development with [spring-boot-insights](https://central.sonatype.com/artifact/io.github.nishithsai00/spring-boot-insights) — a custom API monitoring library I built and published to Maven Central. Tracks per-request SQL query counts and flags N+1 patterns via Hibernate's StatementInspector.
 
 ---
 
-## 🏗️ Project Structure
+## Key Features
+
+- JWT authentication with role-based access control (USER / ADMIN)
+- Pessimistic locking — DB-level write locks on seat rows prevent double-booking under concurrent requests
+- Seats held for 5 minutes during booking, automatically released if payment is not completed
+- Scheduled job runs every 5 minutes 30 seconds to release expired seat locks — the 30-second gap over the 5-minute payment window is intentional, handles the edge case where a payment request and the scheduler try to update the same row at the same time
+- Captcha-based payment simulation with 5-minute timeout
+- Booking cancellation allowed up to 3 hours before show time
+- Centralized exception handling via @RestControllerAdvice — clean JSON errors for all cases, no stack traces exposed
+- Jakarta Bean Validation on all inputs
+- Movie poster upload and retrieval via multipart API
+
+---
+
+## Project Structure
 
 ```
 src/main/java/com/nishith/demo/
 ├── config/
-│   ├── JwtFilter.java          # JWT token validation filter
-│   ├── MyUserDetails.java      # UserDetails implementation
-│   └── Securityconfig.java     # Spring Security filter chain
+│   ├── JwtFilter.java
+│   ├── MyUserDetails.java
+│   └── Securityconfig.java
 ├── controllers/
 │   ├── BookingController.java
 │   ├── MovieController.java
@@ -58,158 +74,153 @@ src/main/java/com/nishith/demo/
 │   ├── Shows.java
 │   ├── Theather.java
 │   └── Users.java
-├── repo/                       # Spring Data JPA repositories
+├── repo/
 ├── service/
-│   ├── AutoScheduling.java     # Scheduled seat release job
-│   ├── BookingsService.java    # Core booking + payment logic
+│   ├── AutoScheduling.java
+│   ├── BookingsService.java
 │   ├── JwtService.java
 │   ├── MovieService.java
 │   ├── ShowService.java
 │   ├── TheatherService.java
 │   └── UserAuthService.java
-└── BookMyShowApplication.java
+└── ReserveShowApplication.java
 ```
 
 ---
 
-## 🛠️ Local Setup
+## Local Setup
 
-### Prerequisites
-- Java 21+
-- MySQL 8 running locally
-- Maven 3.8+
+Prerequisites: Java 21+, MySQL 8, Maven 3.8+
 
-### Steps
+**1. Clone the repo**
 
-**1. Clone the repository**
 ```bash
 git clone https://github.com/nishithsai00/movie_booking_application
 cd movie_booking_application
 ```
 
-**2. Create MySQL database**
+**2. Create the database**
+
 ```sql
 CREATE DATABASE bookmyshow;
 ```
 
-**3. Configure application.properties**
+**3. Create src/main/resources/application.properties**
 
-Create `src/main/resources/application.properties` with:
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/bookmyshow
-spring.datasource.username=YOUR_MYSQL_USERNAME
-spring.datasource.password=YOUR_MYSQL_PASSWORD
-
+spring.datasource.username=YOUR_USERNAME
+spring.datasource.password=YOUR_PASSWORD
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.open-in-view=false
-
-jwt.secret=YOUR_SECRET_KEY_MIN_32_CHARACTERS_LONG
+jwt.secret=YOUR_SECRET_KEY_MIN_32_CHARS
 ```
 
-**4. Run the application**
+**4. Run**
+
 ```bash
 mvn spring-boot:run
 ```
 
-App starts at `http://localhost:8080`
+App starts at http://localhost:8080
 
 ---
 
-## 📡 API Endpoints
-
-### Auth (Public)
-| Method | URL | Description |
-|--------|-----|-------------|
-| POST | `/signup` | Register new user |
-| POST | `/login` | Login — returns JWT token |
-
-### Movies (Public)
-| Method | URL | Auth | Description |
-|--------|-----|------|-------------|
-| GET | `/movies` | None | Get all movies |
-| GET | `/movies/{id}` | None | Get movie by ID |
-| GET | `/movie/name/{name}` | None | Search movie by name |
-| GET | `/movie/location/{location}` | None | Get movies by city |
-| GET | `/movie/{id}/image` | None | Get movie poster image |
-| GET | `/movie/sort` | None | Filter/sort movies |
-| POST | `/addmovie` | ADMIN | Add movie with optional poster |
-| PUT | `/movie/{id}` | ADMIN | Update movie details |
-
-### Shows
-| Method | URL | Auth | Description |
-|--------|-----|------|-------------|
-| GET | `/shows` | USER | Get all shows |
-| POST | `/shows` | ADMIN | Create show (auto-generates seats) |
-| PUT | `/shows/{id}` | ADMIN | Reschedule existing show |
-| DELETE | `/removeshow` | ADMIN | Delete a show |
-| GET | `/movie/{showid}` | USER | Get seat availability for a show |
-| GET | `/movie/{location}/{name}` | None | Get shows by movie + location |
-
-### Theatres
-| Method | URL | Auth | Description |
-|--------|-----|------|-------------|
-| GET | `/theatres` | None | Get all theatres |
-| POST | `/theatres` | ADMIN | Add theatre |
-| PUT | `/theatres/{id}` | ADMIN | Edit theatre |
-| DELETE | `/theatres` | ADMIN | Delete theatre |
-| GET | `/theather/{location}` | None | Get theatres by location |
-
-### Bookings
-| Method | URL | Auth | Description |
-|--------|-----|------|-------------|
-| POST | `/book` | USER | Book seats — returns captcha + total |
-| POST | `/payment` | USER | Complete payment with captcha |
-| GET | `/mybookings` | USER | Get current user's bookings |
-| GET | `/allbookings` | ADMIN | Get all bookings |
-| GET | `/booking/{id}` | ADMIN | Get booking by ID |
-
-### Admin
-| Method | URL | Auth | Description |
-|--------|-----|------|-------------|
-| POST | `/admin/createadmin` | ADMIN | Create new admin user |
-
----
-
-## 🔐 Authentication
-
-All protected endpoints require a `Bearer` token in the Authorization header:
-
-```
-Authorization: Bearer <your_jwt_token>
-```
-
-Get the token from `POST /login`. Token expires after 11 hours.
-
----
-
-## 💡 Architecture Decisions
-
-### Why Pessimistic Locking?
-Seat booking is a classic race condition. Two users can select seat A1 simultaneously — without locking, both could succeed and double-book. Pessimistic locking acquires a DB-level write lock on the seat row during the transaction, so concurrent requests queue up instead of corrupting data.
-
-### Why Stateless JWT?
-No server-side session storage needed. Every request carries its own authentication. Scales horizontally — any instance can validate any token without shared session state.
-
-### Why Scheduled Seat Release?
-Seats locked during a booking hold are automatically freed after 5 minutes if payment isn't completed. Prevents seats from being permanently blocked by abandoned bookings.
-
-### Why Two-Pass Booking Logic?
-Pass 1 validates ALL seats before touching the DB. Pass 2 writes only after all seats are confirmed available. If validation fails, zero DB writes have occurred — nothing to roll back, no partial state.
-
----
-
-## 🧪 Running Tests
+## Docker
 
 ```bash
-mvn test
+docker build -t reserveshow .
+docker run -p 8080:8080 reserveshow
 ```
+
+Multi-stage build. First stage compiles with Maven, second stage runs on eclipse-temurin:21-jre-alpine. No full JDK in the final image.
 
 ---
 
-## 📝 Notes
+## API Endpoints
 
-- First admin must be created directly in the DB (`role = 'ADMIN'`). After that, use `POST /admin/createadmin`
-- Seat naming format: `A1` to `L8` (12 rows × 8 seats = 96 seats per show)
-- Cancellation is only allowed more than 3 hours before show time
-- Payment must be completed within 5 minutes of booking or seats are released
+### Auth
+
+| Method | URL | Description |
+|--------|-----|-------------|
+| POST | /signup | Register new user |
+| POST | /login | Login, returns JWT token |
+
+### Movies
+
+| Method | URL | Auth | Description |
+|--------|-----|------|-------------|
+| GET | /movies | Public | Get all movies |
+| GET | /movies/{id} | Public | Get movie by ID |
+| GET | /movie/name/{name} | Public | Search by name |
+| GET | /movie/location/{location} | Public | Get movies by city |
+| GET | /movie/{id}/image | Public | Get movie poster |
+| GET | /movie/sort | Public | Filter and sort movies |
+| POST | /addmovie | ADMIN | Add movie with optional poster |
+| PUT | /movie/{id} | ADMIN | Update movie |
+
+### Shows
+
+| Method | URL | Auth | Description |
+|--------|-----|------|-------------|
+| GET | /shows | USER | Get all shows |
+| POST | /shows | ADMIN | Create show, auto-generates 96 seats (A1 to L8) |
+| PUT | /shows/{id} | ADMIN | Reschedule show |
+| DELETE | /removeshow | ADMIN | Delete show |
+| GET | /movie/{showid} | USER | Seat availability for a show |
+| GET | /movie/{location}/{name} | Public | Shows by movie and location |
+
+### Theatres
+
+| Method | URL | Auth | Description |
+|--------|-----|------|-------------|
+| GET | /theatres | Public | Get all theatres |
+| POST | /theatres | ADMIN | Add theatre |
+| PUT | /theatres/{id} | ADMIN | Edit theatre |
+| DELETE | /theatres | ADMIN | Delete theatre |
+| GET | /theather/{location} | Public | Theatres by location |
+
+### Bookings
+
+| Method | URL | Auth | Description |
+|--------|-----|------|-------------|
+| POST | /book | USER | Book seats, returns captcha and total |
+| POST | /payment | USER | Complete payment within 5 minutes |
+| GET | /mybookings | USER | Current user's bookings |
+| GET | /allbookings | ADMIN | All bookings |
+| GET | /booking/{id} | ADMIN | Booking by ID |
+| POST | /admin/createadmin | ADMIN | Create admin user |
+
+All protected endpoints require:
+
+```
+Authorization: Bearer your_jwt_token
+```
+
+Token expires after 11 hours.
+
+---
+
+## Architecture Decisions
+
+**Pessimistic locking over optimistic locking**
+Two users picking the same seat simultaneously is the core problem. Without a lock, both read "available," both write "booked," seat gets double-sold. Pessimistic locking issues a SELECT ... FOR UPDATE on the seat row inside the @Transactional boundary. Second request waits at the DB level until the first commits, reads the updated status, and fails cleanly. No application-level retry logic needed.
+
+**Stateless JWT**
+No session storage on the server. Every request carries its own token. Any instance validates any token without shared state — straightforward to scale horizontally.
+
+**Scheduler at 5 minutes 30 seconds, not 5 minutes**
+The payment window is 5 minutes. If the scheduler ran exactly at 5 minutes, it could try to release a seat at the same moment a user's payment request arrives at 4:59. Both would hit the same row simultaneously. The 30-second gap ensures the payment either completes or gets rejected by the payment endpoint's own time check before the scheduler touches the row.
+
+**Two-pass booking validation**
+Before writing anything, all requested seats are validated in a single pass. Only if every seat is available does the write happen. If one seat fails, the whole request is rejected with zero DB writes — no partial state to clean up.
+
+---
+
+## Notes
+
+- First admin must be inserted directly into the DB with role = ADMIN. After that use POST /admin/createadmin
+- Seats are auto-generated per show in A1 to L8 format (12 rows x 8 seats = 96 seats)
+- Cancellation allowed only more than 3 hours before show time
+- Payment window is 5 minutes from booking — after that seats are released automatically
